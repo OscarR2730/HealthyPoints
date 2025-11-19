@@ -4,35 +4,56 @@
   <meta charset="UTF-8" />
   <title>Registrar hábito</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    #cameraContainer {
+      display: none;
+      margin-top: 20px;
+    }
+    video {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    #capturedImage {
+      display: none;
+      width: 100%;
+      margin-top: 10px;
+      border-radius: 10px;
+    }
+  </style>
 </head>
-
 <body>
+
   <div class="center">
+    <h2 class="menu-title">Registrar hábito</h2>
 
-    <h2 class="subtitle-large">Registrar hábito</h2>
+    <p class="subtitle">Selecciona un hábito que realizaste hoy:</p>
 
-    <p class="subtitle">Elige un hábito saludable y regístralo:</p>
+    <select id="habitSelect" class="input">
+      <option value="">-- Selecciona un hábito --</option>
+      <option value="frutas">Comí frutas</option>
+      <option value="verduras">Comí verduras</option>
+      <option value="agua">Tomé agua</option>
+      <option value="correr">Salí a correr</option>
+      <option value="comida_saludable">Comí comida saludable</option>
+      <option value="gym">Hice ejercicio</option>
+    </select>
 
-    <!-- LISTA DE HÁBITOS -->
-    <div class="card">
-      <select id="habitSelect" class="input">
-        <option value="">Seleccione un hábito...</option>
-        <option value="frutas">🍎 Comer frutas</option>
-        <option value="verduras">🥗 Comer verduras</option>
-        <option value="agua">💧 Tomar agua</option>
-        <option value="caminar">🚶‍♂️ Caminata 30 min</option>
-        <option value="correr">🏃‍♂️ Correr</option>
-        <option value="saludable">🥙 Comida saludable</option>
-      </select>
+    <button id="btnStartCamera" class="btn" style="margin-top: 20px;">
+      Tomar foto
+    </button>
 
-      <button id="btnRegistrarHabito" class="btn" style="margin-top: 20px;">
-        Registrar hábito
-      </button>
+    <div id="cameraContainer">
+      <video id="video" autoplay playsinline></video>
+      <button id="btnCapture" class="btn">Capturar foto</button>
+      <img id="capturedImage" />
     </div>
 
-    <button class="btn" onclick="window.location.href='dashboard.html'" style="margin-top: 25px;">
-      Volver al menú
+    <button id="btnSaveHabit" class="btn" style="margin-top: 20px; background-color: #2e8b57;">
+      Guardar hábito
     </button>
+
+    <a href="dashboard.html" class="btn btn-logout" style="margin-top: 18px; text-align:center;">Volver al menú</a>
 
   </div>
 
