@@ -1,104 +1,49 @@
-// Detectar si el usuario está en móvil
-function isMobile() {
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registrar hábito</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
 
-let video = document.getElementById("video");
-let btnStartCamera = document.getElementById("btnStartCamera");
-let btnCapture = document.getElementById("btnCapture");
-let btnSave = document.getElementById("btnSaveHabit");
-let habitSelect = document.getElementById("habitSelect");
-let cameraContainer = document.getElementById("cameraContainer");
-let capturedImage = document.getElementById("capturedImage");
-let mobileCamera = document.getElementById("mobileCamera");
+<body>
+<div class="center">
+  <h2 class="subtitle-large">Registrar hábito</h2>
+  <p class="subtitle">Selecciona un hábito que realizaste hoy:</p>
 
-let photoData = null;
-let stream = null;
+<!-- Select con emojis -->
+<select id="habitSelect" class="input">
+  <option value="">-- Selecciona un hábito --</option>
+  <option value="frutas">🍎 Comí frutas</option>
+  <option value="verduras">🥗 Comí verduras</option>
+  <option value="agua">💧 Tomé un vaso de agua</option>
+  <option value="correr">🏃‍♂️ Salí a correr</option>
+  <option value="gimnasio">🏋️ Fui al gimnasio</option>
+  <option value="meditacion">🧘 Medité</option>
+  <option value="caminata">🚶 Hice una caminata</option>
+</select>
 
-// ================================
-// 🟢 Start Camera Button
-// ================================
-btnStartCamera.addEventListener("click", async () => {
+  <!-- Botones verdes iguales -->
+  <div class="btn-group" style="margin-top:20px">
+    <button id="btnFoto" class="btn">📸 Tomar foto</button>
+    <button id="btnGuardar" class="btn">Guardar hábito</button>
+  </div>
 
-  if (!habitSelect.value) {
-    alert("Primero selecciona un hábito.");
-    return;
-  }
+  <!-- Botón rojo -->
+  <button onclick="window.location.href='dashboard.html'" 
+          class="btn btn-logout" style="margin-top:25px">
+    Volver al menú
+  </button>
 
-  // 📱 En móvil → abrir cámara nativa
-  if (isMobile()) {
-    mobileCamera.click();
-    return;
-  }
+  <br><br>
+  <video id="video" width="300" autoplay style="display:none; border-radius:10px;"></video>
+  <canvas id="canvas" width="300" height="250" style="display:none;"></canvas>
+</div>
 
-  // 💻 En PC → usar getUserMedia
-  cameraContainer.style.display = "block";
+<script type="module" src="./habitos.js"></script>
+</body>
+</html>
 
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "environment" }
-    });
-  } catch (e) {
-    stream = await navigator.mediaDevices.getUserMedia({ video: true });
-  }
-
-  video.srcObject = stream;
-});
-
-// ================================
-// 📱 MÓVIL: Capturar foto desde input file
-// ================================
-mobileCamera.addEventListener("change", () => {
-  const file = mobileCamera.files[0];
-
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    photoData = e.target.result;
-    capturedImage.src = photoData;
-    capturedImage.style.display = "block";
-  };
-
-  reader.readAsDataURL(file);
-
-  alert("Foto tomada correctamente.");
-});
-
-// ================================
-// 💻 PC: Capturar desde webcam
-// ================================
-btnCapture.addEventListener("click", () => {
-  if (!stream) return;
-
-  const canvas = document.createElement("canvas");
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(video, 0, 0);
-
-  photoData = canvas.toDataURL("image/png");
-
-  capturedImage.src = photoData;
-  capturedImage.style.display = "block";
-
-  alert("Foto tomada correctamente.");
-});
-
-// ================================
-// 🔵 Guardar hábito
-// ================================
-btnSave.addEventListener("click", () => {
-  if (!habitSelect.value) {
-    alert("Selecciona un hábito.");
-    return;
-  }
-
-  if (!photoData) {
-    alert("Debes tomar una foto como evidencia.");
-    return;
-  }
 
   alert("Hábito registrado con éxito.\n(Evidencia lista para guardar).");
 });
