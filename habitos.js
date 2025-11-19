@@ -1,49 +1,55 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Registrar hábito</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
+// ====== Captura de elementos ======
+const habitSelect = document.getElementById("habitSelect");
+const btnFoto = document.getElementById("btnFoto");
+const btnGuardar = document.getElementById("btnGuardar");
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
 
-<body>
-<div class="center">
-  <h2 class="subtitle-large">Registrar hábito</h2>
-  <p class="subtitle">Selecciona un hábito que realizaste hoy:</p>
+let fotoTomada = null;
 
-<!-- Select con emojis -->
-<select id="habitSelect" class="input">
-  <option value="">-- Selecciona un hábito --</option>
-  <option value="frutas">🍎 Comí frutas</option>
-  <option value="verduras">🥗 Comí verduras</option>
-  <option value="agua">💧 Tomé un vaso de agua</option>
-  <option value="correr">🏃‍♂️ Salí a correr</option>
-  <option value="gimnasio">🏋️ Fui al gimnasio</option>
-  <option value="meditacion">🧘 Medité</option>
-  <option value="caminata">🚶 Hice una caminata</option>
-</select>
+// ========= ABRIR CÁMARA ==========
+btnFoto.addEventListener("click", async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" }, // cámara trasera
+      audio: false
+    });
 
-  <!-- Botones verdes iguales -->
-  <div class="btn-group" style="margin-top:20px">
-    <button id="btnFoto" class="btn">📸 Tomar foto</button>
-    <button id="btnGuardar" class="btn">Guardar hábito</button>
-  </div>
+    video.srcObject = stream;
+    video.style.display = "block";
 
-  <!-- Botón rojo -->
-  <button onclick="window.location.href='dashboard.html'" 
-          class="btn btn-logout" style="margin-top:25px">
-    Volver al menú
-  </button>
+    // Tomar foto al tocar el video
+    video.onclick = () => {
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      fotoTomada = canvas.toDataURL("image/png");
 
-  <br><br>
-  <video id="video" width="300" autoplay style="display:none; border-radius:10px;"></video>
-  <canvas id="canvas" width="300" height="250" style="display:none;"></canvas>
-</div>
+      video.style.display = "none";
+      canvas.style.display = "block";
 
-<script type="module" src="./habitos.js"></script>
-</body>
-</html>
+      stream.getTracks().forEach(track => track.stop());
+    };
 
+  } catch (e) {
+    alert("Error al acceder a la cámara: " + e.message);
+  }
+});
 
-  alert("Hábito registrado con éxito.\n(Evidencia lista para guardar).");
+// ========= GUARDAR HÁBITO ==========
+btnGuardar.addEventListener("click", () => {
+  const habito = habitSelect.value;
+
+  if (!habito) {
+    alert("Selecciona un hábito antes de guardar.");
+    return;
+  }
+
+  if (!fotoTomada) {
+    alert("Debes tomar una foto como evidencia.");
+    return;
+  }
+
+  alert("Hábito guardado con éxito ✔");
+
+  // Aquí luego puedes enviarlo a Firebase si quieres
 });
