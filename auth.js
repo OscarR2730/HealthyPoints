@@ -1,44 +1,32 @@
-// register.js - Registro de usuario
+// auth.js - Funciones de autenticación
+import { auth, db } from "./firebase.js";
 
-import { registerUser } from "./auth.js";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
-const nameInput = document.getElementById("name");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const btnRegister = document.getElementById("btnRegister");
+import {
+  doc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-btnRegister.addEventListener("click", async () => {
-  const nombre = nameInput.value.trim();
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
+// Registro de usuario
+export async function registerUser(nombre, email, password) {
+  // Crear usuario en Firebase Auth
+  const userCred = await createUserWithEmailAndPassword(auth, email, password);
 
-  if (!nombre || !email || !password) {
-    alert("Por favor completa todos los campos.");
-    return;
-  }
+  // Crear documento del usuario en Firestore
+  await setDoc(doc(db, "users", userCred.user.uid), {
+    name: nombre,
+    points: 0,
+    created: Date.now()
+  });
 
-  btnRegister.disabled = true;
-  const originalText = btnRegister.textContent;
-  btnRegister.textContent = "Registrando...";
+  return userCred;
+}
 
-  try {
-    await registerUser(nombre, email, password);
-
-    alert("¡Cuenta creada con éxito! Ahora inicia sesión.");
-    window.location.href = "login.html";
-
-  } catch (e) {
-    console.error("Error al registrar:", e);
-
-    if (e.code === "auth/email-already-in-use") {
-      alert("Ese correo ya está registrado. Inicia sesión.");
-      window.location.href = "login.html";
-    } else {
-      alert("Error: " + e.message);
-    }
-
-  } finally {
-    btnRegister.disabled = false;
-    btnRegister.textContent = originalText;
-  }
-});
+// Inicio de sesión
+export async function loginUser(email, password) {
+  return await signInWithEmailAndPassword(auth, email, password);
+}
