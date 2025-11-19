@@ -6,10 +6,33 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
   <div class="center">
     <h2 class="menu-title">Registrar hábito</h2>
-    <p class="subtitle">Pantalla en construcción. Funcionalidad básica lista para la demo.</p>
-    <a class="btn" href="dashboard.html">Volver al menú</a>
+
+    <p class="subtitle">Selecciona un hábito que realizaste hoy:</p>
+
+    <div class="input-group">
+      <select id="habitSelect" class="input">
+        <option value="">-- Selecciona un hábito --</option>
+        <option value="Tomé 1 vaso de agua">Tomé 1 vaso de agua</option>
+        <option value="Comí frutas">Comí frutas</option>
+        <option value="Comí verduras">Comí verduras</option>
+        <option value="Evité comida chatarra">Evité comida chatarra</option>
+        <option value="Hice ejercicio 15 min">Hice ejercicio 15 min</option>
+        <option value="Salí a caminar">Salí a caminar</option>
+        <option value="Corrí 20 min">Corrí 20 min</option>
+        <option value="Dormí 8 horas">Dormí 8 horas</option>
+      </select>
+    </div>
+
+    <button id="btnSaveHabit" class="btn">Guardar hábito</button>
+
+    <br><br>
+
+    <a class="btn btn-logout" href="dashboard.html">Volver al menú</a>
   </div>
+
+  <script type="module" src="habitos.js"></script>
 </body>
 </html>
