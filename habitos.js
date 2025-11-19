@@ -1,4 +1,7 @@
-// habitos.js — Configurar cámara y captura
+// Detectar si el usuario está en móvil
+function isMobile() {
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
 
 let video = document.getElementById("video");
 let btnStartCamera = document.getElementById("btnStartCamera");
@@ -7,30 +10,35 @@ let btnSave = document.getElementById("btnSaveHabit");
 let habitSelect = document.getElementById("habitSelect");
 let cameraContainer = document.getElementById("cameraContainer");
 let capturedImage = document.getElementById("capturedImage");
+let mobileCamera = document.getElementById("mobileCamera");
 
-let photoData = null; // Guardará la foto capturada
+let photoData = null;
 let stream = null;
 
 // ================================
-// 🟢 Iniciar cámara (intenta usar cámara trasera)
+// 🟢 Start Camera Button
 // ================================
-
 btnStartCamera.addEventListener("click", async () => {
+
   if (!habitSelect.value) {
     alert("Primero selecciona un hábito.");
     return;
   }
 
+  // 📱 En móvil → abrir cámara nativa
+  if (isMobile()) {
+    mobileCamera.click();
+    return;
+  }
+
+  // 💻 En PC → usar getUserMedia
   cameraContainer.style.display = "block";
 
   try {
     stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: { exact: "environment" }  // TIRA A LA TRASERA
-      }
+      video: { facingMode: "environment" }
     });
   } catch (e) {
-    // Si la trasera NO está disponible, usa la cámara normal
     stream = await navigator.mediaDevices.getUserMedia({ video: true });
   }
 
@@ -38,10 +46,31 @@ btnStartCamera.addEventListener("click", async () => {
 });
 
 // ================================
-// 🟡 Capturar foto
+// 📱 MÓVIL: Capturar foto desde input file
 // ================================
+mobileCamera.addEventListener("change", () => {
+  const file = mobileCamera.files[0];
 
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    photoData = e.target.result;
+    capturedImage.src = photoData;
+    capturedImage.style.display = "block";
+  };
+
+  reader.readAsDataURL(file);
+
+  alert("Foto tomada correctamente.");
+});
+
+// ================================
+// 💻 PC: Capturar desde webcam
+// ================================
 btnCapture.addEventListener("click", () => {
+  if (!stream) return;
+
   const canvas = document.createElement("canvas");
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
@@ -49,7 +78,6 @@ btnCapture.addEventListener("click", () => {
   const ctx = canvas.getContext("2d");
   ctx.drawImage(video, 0, 0);
 
-  // Guardar la imagen en base64
   photoData = canvas.toDataURL("image/png");
 
   capturedImage.src = photoData;
@@ -61,7 +89,6 @@ btnCapture.addEventListener("click", () => {
 // ================================
 // 🔵 Guardar hábito
 // ================================
-
 btnSave.addEventListener("click", () => {
   if (!habitSelect.value) {
     alert("Selecciona un hábito.");
@@ -73,6 +100,5 @@ btnSave.addEventListener("click", () => {
     return;
   }
 
-  // 📌 Aquí luego integremos Firebase Storage
-  alert("Hábito registrado con éxito.\n(Evidencia guardada para la demo)");
+  alert("Hábito registrado con éxito.\n(Evidencia lista para guardar).");
 });
