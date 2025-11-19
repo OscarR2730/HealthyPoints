@@ -1,19 +1,31 @@
-// login.js - Lógica de la pantalla de inicio de sesión
+// login.js - Lógica de inicio de sesión
 import { loginUser } from "./auth.js";
 
-document.getElementById("btnLogin").addEventListener("click", async () => {
-  const correo = document.getElementById("email").value.trim();
-  const contra = document.getElementById("password").value.trim();
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const btnLogin = document.getElementById("btnLogin");
 
-  if (!correo || !contra) {
+btnLogin.addEventListener("click", async () => {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+
+  if (!email || !password) {
     alert("Completa todos los campos.");
     return;
   }
 
+  btnLogin.disabled = true;
+  const originalText = btnLogin.textContent;
+  btnLogin.textContent = "Ingresando...";
+
   try {
-    await loginUser(correo, contra);
+    await loginUser(email, password);
     window.location.href = "dashboard.html";
   } catch (e) {
-    alert("Error: " + e.message);
+    console.error("Error al iniciar sesión:", e);
+    alert("Error al iniciar sesión: " + (e.message || e));
+  } finally {
+    btnLogin.disabled = false;
+    btnLogin.textContent = originalText;
   }
 });

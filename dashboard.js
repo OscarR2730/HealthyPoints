@@ -1,35 +1,14 @@
-// dashboard.js - Lógica del menú principal
-import { watchAuth, logout, getCurrentUserProfile } from "./auth.js";
+// dashboard.js - Cerrar sesión
+import { logoutUser } from "./auth.js";
 
-const welcomeEl = document.getElementById("welcome");
-const logoutBtn = document.getElementById("logout");
+const btnLogout = document.getElementById("btnLogout");
 
-// Vigilar el estado de autenticación
-watchAuth(async (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
-
+btnLogout.addEventListener("click", async () => {
   try {
-    const profile = await getCurrentUserProfile(user);
-    const name =
-      (profile && (profile.name || profile.nombre)) ||
-      user.displayName ||
-      user.email;
-
-    welcomeEl.innerText = "Bienvenido, " + name;
+    await logoutUser();
+    window.location.href = "index.html";
   } catch (e) {
-    console.error(e);
-    welcomeEl.innerText = "Bienvenido";
-  }
-});
-
-// Botón de cerrar sesión
-logoutBtn.addEventListener("click", async () => {
-  try {
-    await logout();
-  } catch (e) {
-    alert("No se pudo cerrar sesión: " + e.message);
+    console.error("Error al cerrar sesión:", e);
+    alert("No se pudo cerrar sesión: " + (e.message || e));
   }
 });

@@ -9,7 +9,7 @@
 /* ===== BODY ===== */
 body {
   background: #eef8f1;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -53,7 +53,7 @@ body {
   margin-bottom: 32px;
 }
 
-/* ===== TÍTULO DEL DASHBOARD ===== */
+/* ===== Para el título del dashboard ===== */
 .menu-title {
   font-size: 26px;
   font-weight: 700;
@@ -82,12 +82,12 @@ body {
   box-shadow: 0 0 0 2px rgba(47, 142, 72, 0.2);
 }
 
-/* ===== BOTONES (UN SOLO COLOR PARA TODOS) ===== */
+/* ===== BOTONES ===== */
 .btn {
   padding: 14px 24px;
   font-size: 17px;
   font-weight: 600;
-  background-color: #2e8b57;   /* VERDE PRINCIPAL */
+  background-color: #2f8e48;
   color: white;
   border: none;
   border-radius: 10px;
@@ -95,30 +95,11 @@ body {
   transition: background-color 0.2s, transform 0.1s;
   display: inline-block;
   text-align: center;
-  width: 100%;
 }
 
 .btn:hover {
-  background-color: #267449;   /* VERDE MÁS OSCURO */
+  background-color: #256f39;
   transform: translateY(-1px);
-}
-
-/* Secundario ahora usa el mismo color */
-.btn.secondary {
-  background-color: #2e8b57;
-}
-
-.btn.secondary:hover {
-  background-color: #267449;
-}
-
-/* ===== BOTÓN DE CERRAR SESIÓN ===== */
-#logout {
-  background-color: #c65353 !important;
-}
-
-#logout:hover {
-  background-color: #aa4444 !important;
 }
 
 /* ===== GRUPO DE BOTONES ===== */
@@ -148,4 +129,12 @@ a:hover {
   margin-top: 20px;
   box-shadow: 0px 0px 10px rgba(0,0,0,0.08);
   text-align: center;
+}
+
+/* ===== MENÚ VERTICAL EN DASHBOARD ===== */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 10px;
 }

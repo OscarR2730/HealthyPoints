@@ -3,7 +3,8 @@ import { auth, db } from "./firebase.js";
 
 import {
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  signOut
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
 import {
@@ -11,22 +12,25 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-// Registro de usuario
+// Registrar usuario y crear documento en 'usuarios'
 export async function registerUser(nombre, email, password) {
-  // Crear usuario en Firebase Auth
   const userCred = await createUserWithEmailAndPassword(auth, email, password);
 
-  // Crear documento del usuario en Firestore
-  await setDoc(doc(db, "users", userCred.user.uid), {
-    name: nombre,
-    points: 0,
-    created: Date.now()
+  await setDoc(doc(db, "usuarios", userCred.user.uid), {
+    nombre,
+    puntos: 0,
+    creado: Date.now()
   });
 
   return userCred;
 }
 
-// Inicio de sesión
-export async function loginUser(email, password) {
-  return await signInWithEmailAndPassword(auth, email, password);
+// Iniciar sesión
+export function loginUser(email, password) {
+  return signInWithEmailAndPassword(auth, email, password);
+}
+
+// Cerrar sesión
+export function logoutUser() {
+  return signOut(auth);
 }

@@ -1,5 +1,4 @@
-// register.js - Registro de usuario
-
+// register.js - Lógica de registro
 import { registerUser } from "./auth.js";
 
 const nameInput = document.getElementById("name");
@@ -23,20 +22,11 @@ btnRegister.addEventListener("click", async () => {
 
   try {
     await registerUser(nombre, email, password);
-
     alert("¡Cuenta creada con éxito! Ahora inicia sesión.");
     window.location.href = "login.html";
-
   } catch (e) {
     console.error("Error al registrar:", e);
-
-    if (e.code === "auth/email-already-in-use") {
-      alert("Ese correo ya está registrado. Inicia sesión.");
-      window.location.href = "login.html";
-    } else {
-      alert("Error: " + e.message);
-    }
-
+    alert("Error al registrar: " + (e.message || e));
   } finally {
     btnRegister.disabled = false;
     btnRegister.textContent = originalText;
