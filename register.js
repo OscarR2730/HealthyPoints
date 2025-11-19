@@ -20,13 +20,20 @@ btnRegister.addEventListener("click", async () => {
   const originalText = btnRegister.textContent;
   btnRegister.textContent = "Registrando...";
 
+  console.log("CLICK registro", { nombre, email });
+
   try {
+    console.log("Antes de registerUser");
     await registerUser(nombre, email, password);
+    console.log("Después de registerUser");
+
     alert("¡Cuenta creada con éxito! Ahora inicia sesión.");
     window.location.href = "login.html";
+
   } catch (e) {
     console.error("Error al registrar:", e);
     alert("Error al registrar: " + (e.message || e));
+
   } finally {
     btnRegister.disabled = false;
     btnRegister.textContent = originalText;
