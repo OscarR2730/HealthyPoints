@@ -18,6 +18,8 @@ btnLogin.addEventListener("click", async () => {
   const originalText = btnLogin.textContent;
   btnLogin.textContent = "Ingresando...";
 
+  console.log("CLICK login", { email });
+
   try {
     await loginUser(email, password);
     window.location.href = "dashboard.html";
