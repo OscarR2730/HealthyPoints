@@ -1,39 +1,38 @@
-// auth.js - Funciones de autenticación
-import { auth, db } from "./firebase.js";
+// auth.js - Funciones de autenticación básicas
+import { auth } from "./firebase.js";
 
 import {
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  signOut
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-
-import {
-  doc,
-  setDoc
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
-
 
 // ---------------------------
 // REGISTRAR USUARIO
 // ---------------------------
 export async function registerUser(nombre, email, password) {
+  console.log("auth.registerUser llamado", { nombre, email });
 
   // Crear usuario en Firebase Auth
   const userCred = await createUserWithEmailAndPassword(auth, email, password);
 
-  // Crear documento en Firestore
-  await setDoc(doc(db, "usuarios", userCred.user.uid), {
-    nombre: nombre,
-    puntos: 0,
-    creado: Date.now()
-  });
+  console.log("Usuario creado en Auth:", userCred.user.uid);
+  // (De momento no tocamos Firestore para evitar cuelgues raros)
 
   return userCred;
 }
-
 
 // ---------------------------
 // INICIAR SESIÓN
 // ---------------------------
 export function loginUser(email, password) {
+  console.log("auth.loginUser llamado", email);
   return signInWithEmailAndPassword(auth, email, password);
+}
+
+// ---------------------------
+// CERRAR SESIÓN
+// ---------------------------
+export function logoutUser() {
+  return signOut(auth);
 }
