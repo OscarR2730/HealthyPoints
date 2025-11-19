@@ -1,41 +1,78 @@
-// habitos.js
-import { auth, db } from "./firebase.js";
-import {
-  doc,
-  updateDoc,
-  increment,
-  arrayUnion
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+// habitos.js — Configurar cámara y captura
 
-document.getElementById("btnRegistrarHabito").addEventListener("click", async () => {
-  const habit = document.getElementById("habitSelect").value;
+let video = document.getElementById("video");
+let btnStartCamera = document.getElementById("btnStartCamera");
+let btnCapture = document.getElementById("btnCapture");
+let btnSave = document.getElementById("btnSaveHabit");
+let habitSelect = document.getElementById("habitSelect");
+let cameraContainer = document.getElementById("cameraContainer");
+let capturedImage = document.getElementById("capturedImage");
 
-  if (!habit) {
-    alert("Por favor selecciona un hábito.");
+let photoData = null; // Guardará la foto capturada
+let stream = null;
+
+// ================================
+// 🟢 Iniciar cámara (intenta usar cámara trasera)
+// ================================
+
+btnStartCamera.addEventListener("click", async () => {
+  if (!habitSelect.value) {
+    alert("Primero selecciona un hábito.");
     return;
   }
 
-  const user = auth.currentUser;
-  if (!user) {
-    alert("Debes iniciar sesión.");
-    return;
-  }
+  cameraContainer.style.display = "block";
 
   try {
-    const ref = doc(db, "users", user.uid);
-
-    await updateDoc(ref, {
-      points: increment(10),
-      habits: arrayUnion({
-        habit: habit,
-        date: new Date().toISOString()
-      })
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { exact: "environment" }  // TIRA A LA TRASERA
+      }
     });
-
-    alert("Hábito registrado con éxito. ¡Ganaste 10 puntos!");
-
   } catch (e) {
-    console.error("Error guardando hábito:", e);
-    alert("Error guardando hábito.");
+    // Si la trasera NO está disponible, usa la cámara normal
+    stream = await navigator.mediaDevices.getUserMedia({ video: true });
   }
+
+  video.srcObject = stream;
+});
+
+// ================================
+// 🟡 Capturar foto
+// ================================
+
+btnCapture.addEventListener("click", () => {
+  const canvas = document.createElement("canvas");
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(video, 0, 0);
+
+  // Guardar la imagen en base64
+  photoData = canvas.toDataURL("image/png");
+
+  capturedImage.src = photoData;
+  capturedImage.style.display = "block";
+
+  alert("Foto tomada correctamente.");
+});
+
+// ================================
+// 🔵 Guardar hábito
+// ================================
+
+btnSave.addEventListener("click", () => {
+  if (!habitSelect.value) {
+    alert("Selecciona un hábito.");
+    return;
+  }
+
+  if (!photoData) {
+    alert("Debes tomar una foto como evidencia.");
+    return;
+  }
+
+  // 📌 Aquí luego integremos Firebase Storage
+  alert("Hábito registrado con éxito.\n(Evidencia guardada para la demo)");
 });
