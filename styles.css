@@ -1,0 +1,151 @@
+/* ===== RESETEO ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+/* ===== BODY ===== */
+body {
+  background: #eef8f1;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ===== CONTENEDOR “TARJETA” ===== */
+.center {
+  background: white;
+  padding: 50px 40px;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+/* ===== LOGO ===== */
+.logo {
+  width: 100px;
+  margin-bottom: 20px;
+}
+
+/* ===== TÍTULOS ===== */
+.title {
+  font-size: 38px;
+  font-weight: 700;
+  color: #0b5e2b;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #557a66;
+  margin-bottom: 32px;
+}
+
+.subtitle-large {
+  font-size: 24px;
+  font-weight: 600;
+  color: #0b5e2b;
+  margin-bottom: 32px;
+}
+
+/* ===== TÍTULO DEL DASHBOARD ===== */
+.menu-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #0b5e2b;
+  margin-bottom: 10px;
+}
+
+/* ===== GRUPO DE INPUTS ===== */
+.input-group {
+  margin-bottom: 24px;
+}
+
+/* ===== INPUTS ===== */
+.input {
+  width: 100%;
+  padding: 16px 18px;
+  font-size: 16px;
+  border: 1px solid #c4d8c3;
+  border-radius: 10px;
+  transition: border-color 0.3s;
+}
+
+.input:focus {
+  border-color: #2f8e48;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(47, 142, 72, 0.2);
+}
+
+/* ===== BOTONES (UN SOLO COLOR PARA TODOS) ===== */
+.btn {
+  padding: 14px 24px;
+  font-size: 17px;
+  font-weight: 600;
+  background-color: #2e8b57;   /* VERDE PRINCIPAL */
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  display: inline-block;
+  text-align: center;
+  width: 100%;
+}
+
+.btn:hover {
+  background-color: #267449;   /* VERDE MÁS OSCURO */
+  transform: translateY(-1px);
+}
+
+/* Secundario ahora usa el mismo color */
+.btn.secondary {
+  background-color: #2e8b57;
+}
+
+.btn.secondary:hover {
+  background-color: #267449;
+}
+
+/* ===== BOTÓN DE CERRAR SESIÓN ===== */
+#logout {
+  background-color: #c65353 !important;
+}
+
+#logout:hover {
+  background-color: #aa4444 !important;
+}
+
+/* ===== GRUPO DE BOTONES ===== */
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ===== LINKS ===== */
+a {
+  color: #2f8e48;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ===== TARJETAS ===== */
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  width: 100%;
+  margin-top: 20px;
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.08);
+  text-align: center;
+}

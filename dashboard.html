@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Menú principal</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    /* Misma paleta de verde sólido */
+    .btn {
+      background: #2e8b57;
+    }
+    .btn:hover {
+      background: #267449;
+    }
+
+    /* Botón salir */
+    #logout {
+      background: #c65353 !important;
+    }
+    #logout:hover {
+      background: #aa4444 !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="center">
+
+    <h2 class="subtitle-large">Menú principal</h2>
+    <p id="welcome" class="subtitle"></p>
+
+    <div class="btn-group">
+      <a href="/habitos.html" class="btn">Registrar hábito</a>
+      <a href="/progreso.html" class="btn">Ver progreso</a>
+      <a href="/ranking.html" class="btn">Ranking</a>
+      <a href="/recompensas.html" class="btn">Recompensas</a>
+    </div>
+
+    <button id="logout" class="btn" style="margin-top:25px;">Cerrar sesión</button>
+
+  </div>
+
+  <script type="module" src="dashboard.js"></script>
+
+</body>
+</html>
