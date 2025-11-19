@@ -138,12 +138,16 @@ a:hover {
   gap: 16px;
   margin-top: 10px;
 }
-/* Botón rojo para Cerrar sesión */
+
+/* ===== BOTÓN ROJO (Opción A: Rojo moderno con sombra) ===== */
 .btn-logout {
-  background-color: #c0392b !important;
-  color: white !important;
+  background-color: #c0392b; /* rojo moderno */
+  color: white;
+  box-shadow: 0 3px 12px rgba(192, 57, 43, 0.35); /* sombra */
+  transition: background-color 0.2s, transform 0.15s;
 }
 
 .btn-logout:hover {
-  background-color: #a93226 !important;
+  background-color: #a93226;
+  transform: translateY(-2px);
 }
