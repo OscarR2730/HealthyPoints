@@ -1,14 +1,13 @@
-// habitos.js - Guardar hábitos en Firebase
+// habitos.js
 import { auth, db } from "./firebase.js";
-
 import {
-  addDoc,
-  collection,
-  serverTimestamp
+  doc,
+  updateDoc,
+  increment,
+  arrayUnion
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-document.getElementById("btnSaveHabit").addEventListener("click", async () => {
-
+document.getElementById("btnRegistrarHabito").addEventListener("click", async () => {
   const habit = document.getElementById("habitSelect").value;
 
   if (!habit) {
@@ -17,25 +16,26 @@ document.getElementById("btnSaveHabit").addEventListener("click", async () => {
   }
 
   const user = auth.currentUser;
-
   if (!user) {
     alert("Debes iniciar sesión.");
-    window.location.href = "login.html";
     return;
   }
 
   try {
-    await addDoc(collection(db, "habits"), {
-      uid: user.uid,
-      habit: habit,
-      date: serverTimestamp()
+    const ref = doc(db, "users", user.uid);
+
+    await updateDoc(ref, {
+      points: increment(10),
+      habits: arrayUnion({
+        habit: habit,
+        date: new Date().toISOString()
+      })
     });
 
-    alert("¡Hábito registrado con éxito!");
-    document.getElementById("habitSelect").value = "";
+    alert("Hábito registrado con éxito. ¡Ganaste 10 puntos!");
 
   } catch (e) {
-    console.error("Error al guardar hábito:", e);
-    alert("No se pudo guardar el hábito.");
+    console.error("Error guardando hábito:", e);
+    alert("Error guardando hábito.");
   }
 });
