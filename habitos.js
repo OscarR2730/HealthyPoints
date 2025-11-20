@@ -1,5 +1,4 @@
 import { auth, db } from "./firebase.js";
-
 import {
   doc,
   updateDoc,
@@ -7,16 +6,56 @@ import {
   arrayUnion
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-import { signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const btnFoto = document.getElementById("btnFoto");
+const btnCapturar = document.getElementById("btnCapturar");
+const btnGuardar = document.getElementById("btnGuardar");
+const habitSelect = document.getElementById("habitSelect");
+const previewBadge = document.getElementById("fotoBadge");
 
-let video = document.getElementById("video");
-let canvas = document.getElementById("canvas");
-let btnFoto = document.getElementById("btnFoto");
-let btnGuardar = document.getElementById("btnGuardar");
-let habitSelect = document.getElementById("habitSelect");
-let previewBadge = document.getElementById("fotoBadge");
+let stream;
 
-// 🟢 SISTEMA DE PUNTOS
+// 🔵 1. ABRIR CÁMARA
+btnFoto.addEventListener("click", async () => {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    video.srcObject = stream;
+
+    video.style.display = "block";
+    btnCapturar.style.display = "inline-block";
+    btnGuardar.style.display = "none";
+
+    canvas.style.display = "none";
+    previewBadge.style.display = "none";
+
+  } catch (e) {
+    alert("No se pudo acceder a la cámara.");
+    console.error(e);
+  }
+});
+
+// 🔵 2. CAPTURAR FOTO
+btnCapturar.addEventListener("click", () => {
+  const context = canvas.getContext("2d");
+
+  canvas.style.display = "block";
+  video.style.display = "none";
+
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  // Detener cámara
+  if (stream) stream.getTracks().forEach(t => t.stop());
+
+  // Mostrar badge
+  previewBadge.innerText = "📸 Foto capturada";
+  previewBadge.style.display = "inline-block";
+
+  // Mostrar botón Guardar
+  btnGuardar.style.display = "inline-block";
+});
+
+// 📌 PUNTOS POR HÁBITO
 const habitPoints = {
   frutas: 10,
   verduras: 10,
@@ -27,48 +66,10 @@ const habitPoints = {
   caminata: 12
 };
 
-// ⭐ TU API KEY DE IMGBB
+// 🔑 API key imgbb
 const IMGBB_API_KEY = "0a6a8d103c3be2b8620beba685c8acd7";
 
-// --- INICIAR CÁMARA ---
-btnFoto.addEventListener("click", async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { exact: "environment" } }
-    });
-
-    video.srcObject = stream;
-    video.style.display = "block";
-    canvas.style.display = "none";
-    previewBadge.style.display = "none";
-
-  } catch (error) {
-    const fallback = await navigator.mediaDevices.getUserMedia({ video: true });
-    video.srcObject = fallback;
-  }
-});
-
-// --- CAPTURAR FOTO ---
-btnFoto.addEventListener("click", () => {
-  const context = canvas.getContext("2d");
-
-  // Capturar imagen
-  canvas.style.display = "block";
-  video.style.display = "none";
-
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-  // Mostrar badge visual
-  previewBadge.innerText = "📸 Foto capturada";
-  previewBadge.style.display = "inline-block";
-
-  // Detener cámara para congelar imagen
-  if (video.srcObject) {
-    video.srcObject.getTracks().forEach(t => t.stop());
-  }
-});
-
-// --- GUARDAR HÁBITO ---
+// 🔵 3. GUARDAR HÁBITO
 btnGuardar.addEventListener("click", async () => {
   const habit = habitSelect.value;
   if (!habit) return alert("Selecciona un hábito.");
@@ -77,25 +78,21 @@ btnGuardar.addEventListener("click", async () => {
   if (!user) return alert("Debes iniciar sesión.");
 
   try {
-    // Convertir canvas a base64
+    // convertir canvas a base64
     const dataUrl = canvas.toDataURL("image/png").replace("data:image/png;base64,", "");
 
-    // Subir a imgbb
     const formData = new FormData();
     formData.append("key", IMGBB_API_KEY);
     formData.append("image", dataUrl);
 
-    const response = await fetch("https://api.imgbb.com/1/upload", {
+    const res = await fetch("https://api.imgbb.com/1/upload", {
       method: "POST",
       body: formData
     });
+    const result = await res.json();
 
-    const result = await response.json();
     if (!result.success) throw new Error("Error subiendo imagen");
 
-    const imageUrl = result.data.url;
-
-    // Puntos
     const puntosGanados = habitPoints[habit] || 0;
     const userRef = doc(db, "users", user.uid);
 
@@ -103,7 +100,7 @@ btnGuardar.addEventListener("click", async () => {
       points: increment(puntosGanados),
       evidencias: arrayUnion({
         habit,
-        image: imageUrl,
+        image: result.data.url,
         date: new Date().toISOString()
       })
     });
@@ -113,16 +110,7 @@ btnGuardar.addEventListener("click", async () => {
     window.location.href = "dashboard.html";
 
   } catch (err) {
-    alert("Error guardando hábito o subiendo la imagen.");
+    alert("Error al guardar el hábito.");
     console.error(err);
   }
 });
-
-// --- CERRAR SESIÓN ---
-let logoutBtn = document.getElementById("logoutBtn");
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", async () => {
-    await signOut(auth);
-    window.location.href = "index.html";
-  });
-}
