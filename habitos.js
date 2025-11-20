@@ -23,11 +23,12 @@ btnFoto.addEventListener("click", async () => {
     video.srcObject = stream;
 
     video.style.display = "block";
-    btnCapturar.style.display = "inline-block";
-    btnGuardar.style.display = "none";
-
     canvas.style.display = "none";
     previewBadge.style.display = "none";
+
+    btnFoto.style.display = "none";             // Ocultar tomar foto
+    btnCapturar.style.display = "inline-block"; // Mostrar capturar
+    btnGuardar.style.display = "none";
 
   } catch (e) {
     alert("No se pudo acceder a la cámara.");
@@ -44,15 +45,14 @@ btnCapturar.addEventListener("click", () => {
 
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  // Detener cámara
   if (stream) stream.getTracks().forEach(t => t.stop());
 
-  // Mostrar badge
   previewBadge.innerText = "📸 Foto capturada";
   previewBadge.style.display = "inline-block";
 
-  // Mostrar botón Guardar
-  btnGuardar.style.display = "inline-block";
+  btnFoto.style.display = "inline-block";     // Para repetir foto
+  btnCapturar.style.display = "none";         // Ocultar capturar
+  btnGuardar.style.display = "inline-block";  // Mostrar guardar
 });
 
 // 📌 PUNTOS POR HÁBITO
@@ -66,7 +66,7 @@ const habitPoints = {
   caminata: 12
 };
 
-// 🔑 API key imgbb
+// 🔑 API KEY IMGBB
 const IMGBB_API_KEY = "0a6a8d103c3be2b8620beba685c8acd7";
 
 // 🔵 3. GUARDAR HÁBITO
@@ -78,7 +78,6 @@ btnGuardar.addEventListener("click", async () => {
   if (!user) return alert("Debes iniciar sesión.");
 
   try {
-    // convertir canvas a base64
     const dataUrl = canvas.toDataURL("image/png").replace("data:image/png;base64,", "");
 
     const formData = new FormData();
@@ -105,12 +104,4 @@ btnGuardar.addEventListener("click", async () => {
       })
     });
 
-    alert(`✔ Hábito guardado\n📸 Foto subida con éxito\n+${puntosGanados} puntos`);
-
-    window.location.href = "dashboard.html";
-
-  } catch (err) {
-    alert("Error al guardar el hábito.");
-    console.error(err);
-  }
-});
+    alert(`✔ Hábito
