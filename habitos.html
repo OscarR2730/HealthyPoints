@@ -12,7 +12,7 @@
     <h2 class="menu-title">Registrar hábito</h2>
     <p class="subtitle">Selecciona un hábito que realizaste hoy:</p>
 
-    <!-- Select con emojis -->
+    <!-- Select de hábitos -->
     <select id="habitSelect" class="input">
       <option value="">-- Selecciona un hábito --</option>
       <option value="frutas">🍎 Comí frutas</option>
@@ -26,19 +26,20 @@
 
     <br><br>
 
-    <!-- Botones iguales -->
+    <!-- Botones -->
     <div class="btn-row">
       <button id="btnFoto" class="btn btn-green">Tomar foto</button>
-      <button id="btnGuardar" class="btn btn-green">Guardar hábito</button>
+      <button id="btnCapturar" class="btn btn-green" style="display:none;">Capturar</button>
+      <button id="btnGuardar" class="btn btn-green" style="display:none;">Guardar hábito</button>
     </div>
 
     <!-- Vista de cámara -->
     <video id="video" width="280" autoplay playsinline style="display:none; margin-top:15px;"></video>
 
-    <!-- Captura -->
-    <canvas id="canvas" width="280" height="200" style="display:none;"></canvas>
+    <!-- Captura final -->
+    <canvas id="canvas" width="280" height="200" style="display:none; margin-top: 15px;"></canvas>
 
-    <!-- 🔥 BADGE DE FOTO TOMADA -->
+    <!-- Badge -->
     <span id="fotoBadge" 
       style="display:none; background:#4CAF50; color:white; padding:6px 12px; border-radius:8px; margin-top:10px; font-size:14px;">
     </span>
@@ -48,7 +49,6 @@
     <a href="dashboard.html" class="btn btn-logout">Volver al menú</a>
   </div>
 
-  <!-- IMPORTANTE: módulo activado -->
   <script type="module" src="habitos.js"></script>
 
 </body>
