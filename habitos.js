@@ -1,16 +1,17 @@
+// habitos.js
 import { auth, db, storage } from "./firebase.js";
-import { 
-  collection, 
-  addDoc, 
-  serverTimestamp 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+import {
+  collection,
+  addDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
 import {
   ref,
   uploadString,
   getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-storage.js";
 
 // ================================
 // ELEMENTOS DEL HTML
@@ -22,69 +23,66 @@ const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-let fotoBase64 = null;  // Aquí guardamos la foto tomada
-
+let stream = null;
+let fotoBase64 = null;
+let previsualizando = false;
 
 // ================================
-// ABRIR CÁMARA (PC y CELULAR)
+// 📸 MANEJO DE CÁMARA
 // ================================
 btnFoto.addEventListener("click", async () => {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: { ideal: "environment" }  // Usa cámara trasera en celulares
-      }
-    });
+    // Si todavía no estamos previsualizando → abrir cámara
+    if (!previsualizando) {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: "environment" } },
+        audio: false
+      });
 
-    video.style.display = "block";
-    video.srcObject = stream;
+      video.style.display = "block";
+      canvas.style.display = "none";
+      video.srcObject = stream;
 
-    // Tomar foto al hacer clic nuevamente
-    btnFoto.textContent = "Capturar foto";
-    
-    btnFoto.onclick = () => {
+      btnFoto.textContent = "Capturar foto";
+      previsualizando = true;
+      return;
+    }
+
+    // Si ya estamos previsualizando → capturar foto
+    if (previsualizando && stream) {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      canvas.style.display = "block";
-
-      // Guardar foto en Base64
       fotoBase64 = canvas.toDataURL("image/jpeg", 0.9);
 
-      // Apagar cámara
-      const tracks = stream.getTracks();
-      tracks.forEach(t => t.stop());
-
+      canvas.style.display = "block";
       video.style.display = "none";
-      btnFoto.textContent = "Tomar foto";
-      btnFoto.onclick = null; // Restaurar después
-      btnFoto.addEventListener("click", restartCamera);
-    };
 
-  } catch (error) {
-    alert("No se pudo acceder a la cámara.");
-    console.error(error);
+      // Apagar la cámara
+      stream.getTracks().forEach(t => t.stop());
+      stream = null;
+
+      btnFoto.textContent = "Tomar otra foto";
+      previsualizando = false;
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("No se pudo acceder a la cámara. Revisa permisos de cámara.");
   }
 });
 
-
-function restartCamera() {
-  location.reload();
-}
-
-
 // ================================
-// GUARDAR HÁBITO EN FIRESTORE + FOTO EN STORAGE
+// 💾 GUARDAR HÁBITO + FOTO EN FIREBASE
 // ================================
 btnGuardar.addEventListener("click", async () => {
+  const habito = habitSelect.value;
 
-  const habitSelected = habitSelect.value.trim();
-
-  if (!habitSelected) {
-    alert("Por favor selecciona un hábito.");
+  if (!habito) {
+    alert("Selecciona un hábito primero.");
     return;
   }
 
   if (!fotoBase64) {
-    alert("Primero debes tomar una foto como evidencia.");
+    alert("Primero toma una foto como evidencia.");
     return;
   }
 
@@ -95,36 +93,30 @@ btnGuardar.addEventListener("click", async () => {
   }
 
   try {
-    // ================================
-    // 1. SUBIR FOTO A STORAGE
-    // ================================
-    const fileName = `evidencias/${user.uid}/${Date.now()}.jpg`;
-    const storageRef = ref(storage, fileName);
+    // 1. Subir la imagen a Storage
+    const filePath = `evidencias/${user.uid}/${Date.now()}.jpg`;
+    const storageRef = ref(storage, filePath);
 
-    // Subir cadena Base64
     await uploadString(storageRef, fotoBase64, "data_url");
+    const urlFoto = await getDownloadURL(storageRef);
 
-    // Obtener URL de descarga
-    const imageURL = await getDownloadURL(storageRef);
-
-
-    // ================================
-    // 2. GUARDAR INFORMACIÓN EN FIRESTORE
-    // ================================
+    // 2. Guardar registro en Firestore
     await addDoc(collection(db, "habitos"), {
       uid: user.uid,
-      habito: habitSelected,
-      fecha: serverTimestamp(),
-      evidenciaURL: imageURL
+      habito,
+      evidenciaURL: urlFoto,
+      creadoEn: serverTimestamp()
     });
 
     alert("Hábito guardado con éxito 🎉");
 
-    // Reiniciar página
-    location.reload();
+    // Reset sencillo
+    habitSelect.value = "";
+    canvas.style.display = "none";
+    fotoBase64 = null;
 
-  } catch (error) {
-    console.error("Error guardando hábito:", error);
-    alert("Ocurrió un error guardando el hábito.");
+  } catch (err) {
+    console.error("Error al guardar hábito:", err);
+    alert("Ocurrió un error al guardar el hábito.");
   }
 });
