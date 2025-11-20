@@ -2,14 +2,43 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Tu progreso</title>
+  <title>Mi progreso</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
   <div class="center">
-    <h2 class="menu-title">Tu progreso</h2>
-    <p class="subtitle">Pantalla en construcción. Funcionalidad básica lista para la demo.</p>
-    <a class="btn" href="dashboard.html">Volver al menú</a>
+    <h2 class="menu-title">Mi progreso</h2>
+    <p class="subtitle">Puntos acumulados:</p>
+
+    <h1 id="pointsDisplay" style="font-size:45px; color:#0b5e2b;">0</h1>
+
+    <br>
+    <a href="dashboard.html" class="btn btn-logout">Volver al menú</a>
   </div>
+
+  <script type="module">
+    import { auth, db } from "./firebase.js";
+    import {
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      const refUser = doc(db, "users", user.uid);
+      const snap = await getDoc(refUser);
+
+      if (snap.exists()) {
+        document.getElementById("pointsDisplay").textContent =
+          snap.data().points ?? 0;
+      }
+    });
+  </script>
+
 </body>
 </html>
