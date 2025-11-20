@@ -159,3 +159,17 @@ a:hover {
   background-color: #a93226 !important;
   transform: translateY(-2px);
 }
+
+/* Botones verdes iguales */
+.btn-green {
+  background-color: #2f8e48 !important;
+  color: white !important;
+  border-radius: 10px;
+  padding: 14px 24px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.btn-green:hover {
+  background-color: #256f39 !important;
+}
