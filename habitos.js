@@ -1,30 +1,33 @@
+/***************************************************
+ *  IMPORTS FIREBASE
+ ***************************************************/
 import { auth, db } from "./firebase.js";
 
 import {
   doc,
   updateDoc,
+  getDoc,
   increment
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-//////////////////////////////////////////////////
-//  CLOUDINARY CONFIG  (REEMPLAZA CON TUS DATOS)
-//////////////////////////////////////////////////
-const CLOUD_NAME = "dyxxnexsj";        // tu cloud_name
-const UPLOAD_PRESET = "default_preset"; // tu upload preset (revisa en Cloudinary)
-const CLOUD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+/***************************************************
+ *  CLOUDINARY CONFIG
+ ***************************************************/
+const CLOUD_NAME = "dyxxnexsj";          // ← tu cloud_name
+const UPLOAD_PRESET = "healthy_upload";  // ← tu preset creado
 
-//////////////////////////////////////////////////
-//  ELEMENTOS HTML
-//////////////////////////////////////////////////
+/***************************************************
+ *  ELEMENTOS DEL DOM
+ ***************************************************/
 let video = document.getElementById("video");
 let canvas = document.getElementById("canvas");
 let btnFoto = document.getElementById("btnFoto");
 let btnGuardar = document.getElementById("btnGuardar");
 let habitSelect = document.getElementById("habitSelect");
 
-//////////////////////////////////////////////////
-//  SISTEMA DE PUNTOS
-//////////////////////////////////////////////////
+/***************************************************
+ *   SISTEMA DE PUNTOS
+ ***************************************************/
 const habitPoints = {
   frutas: 10,
   verduras: 10,
@@ -35,62 +38,35 @@ const habitPoints = {
   caminata: 12
 };
 
-//////////////////////////////////////////////////
-//  OBTENER CÁMARA TRASERA EN ANDROID + iPHONE
-//////////////////////////////////////////////////
-
-function getRearCameraConfig() {
-  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-  if (isIOS) {
-    return { video: { facingMode: "environment" } };
-  }
-
-  // Android y otros
-  return { video: { facingMode: { exact: "environment" } } };
-}
-
-//////////////////////////////////////////////////
-//  INICIAR CÁMARA
-//////////////////////////////////////////////////
+/***************************************************
+ *   INICIAR CÁMARA (TRASERA EN MÓVIL)
+ ***************************************************/
 btnFoto.addEventListener("click", async () => {
   try {
-    const config = getRearCameraConfig();
+    const constraints = {
+      video: {
+        facingMode: { ideal: "environment" }  // ← cámara trasera
+      },
+      audio: false
+    };
 
-    const stream = await navigator.mediaDevices.getUserMedia(config);
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
     video.srcObject = stream;
     video.style.display = "block";
-    canvas.style.display = "none";
 
   } catch (error) {
-    console.error("Error cámara:", error);
-    alert("No se pudo acceder a la cámara trasera. Revisa permisos.");
+    console.error(error);
+    alert("No se pudo acceder a la cámara.");
   }
 });
 
-//////////////////////////////////////////////////
-//  SUBIR A CLOUDINARY
-//////////////////////////////////////////////////
-async function uploadToCloudinary(dataUrl) {
-  const formData = new FormData();
-  formData.append("file", dataUrl);
-  formData.append("upload_preset", UPLOAD_PRESET);
-
-  const res = await fetch(CLOUD_URL, {
-    method: "POST",
-    body: formData
-  });
-
-  const data = await res.json();
-  return data.secure_url; // URL final
-}
-
-//////////////////////////////////////////////////
-//  GUARDAR HÁBITO
-//////////////////////////////////////////////////
+/***************************************************
+ *   GUARDAR HÁBITO + FOTO
+ ***************************************************/
 btnGuardar.addEventListener("click", async () => {
   const habit = habitSelect.value;
+
   if (!habit) {
     alert("Selecciona un hábito.");
     return;
@@ -102,29 +78,64 @@ btnGuardar.addEventListener("click", async () => {
     return;
   }
 
-  // Tomar foto del video
+  /***************************************************
+   *   CAPTURAR FOTO DESDE EL VIDEO
+   ***************************************************/
   const context = canvas.getContext("2d");
-  canvas.style.display = "block";
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
   const dataUrl = canvas.toDataURL("image/png");
 
-  // Subir imagen a Cloudinary
-  const imageUrl = await uploadToCloudinary(dataUrl);
+  /***************************************************
+   *   SUBIR FOTO A CLOUDINARY
+   ***************************************************/
+  try {
+    const formData = new FormData();
+    formData.append("file", dataUrl);
+    formData.append("upload_preset", UPLOAD_PRESET);
 
-  // Actualizar puntos del usuario
-  const puntosGanados = habitPoints[habit] || 0;
+    const cloudinaryUrl = 
+      `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
 
-  const userRef = doc(db, "users", user.uid);
-  await updateDoc(userRef, {
-    points: increment(puntosGanados)
-  });
+    const response = await fetch(cloudinaryUrl, {
+      method: "POST",
+      body: formData
+    });
 
-  alert(`Hábito guardado 🎉\nFoto subida📸\n+${puntosGanados} puntos`);
+    const uploadResult = await response.json();
 
-  // Detener cámara
-  if (video.srcObject) {
-    video.srcObject.getTracks().forEach(t => t.stop());
+    if (!uploadResult.secure_url) {
+      throw new Error("Error al subir imagen a Cloudinary");
+    }
+
+    const imageUrl = uploadResult.secure_url;
+
+    /***************************************************
+     *   SUMAR PUNTOS EN FIRESTORE
+     ***************************************************/
+    const puntosGanados = habitPoints[habit] || 0;
+
+    const userRef = doc(db, "users", user.uid);
+    await updateDoc(userRef, {
+      points: increment(puntosGanados)
+    });
+
+    alert(`Hábito guardado 🎉\n+${puntosGanados} puntos obtenidos`);
+
+    /***************************************************
+     *   DETENER CÁMARA
+     ***************************************************/
+    if (video.srcObject) {
+      video.srcObject.getTracks().forEach(t => t.stop());
+    }
+
+    /***************************************************
+     *   REDIRIGIR
+     ***************************************************/
+    window.location.href = "dashboard.html";
+
+  } catch (error) {
+    console.error(error);
+    alert("Error guardando hábito o subiendo imagen.");
   }
-
-  window.location.href = "dashboard.html";
 });
