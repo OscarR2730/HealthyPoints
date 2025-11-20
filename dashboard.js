@@ -6,7 +6,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
 // Botón de cerrar sesión
-const btnLogout = document.getElementById("btnLogout");
+const btnLogout = document.getElementById("logoutBtn");
 
 // Verificar que el botón exista (por si GitHub Pages carga lento)
 if (btnLogout) {
@@ -21,5 +21,5 @@ if (btnLogout) {
     }
   });
 } else {
-  console.error("❌ No se encontró el botón btnLogout en el DOM");
+  console.error("❌ No se encontró el botón logoutBtn en el DOM");
 }
