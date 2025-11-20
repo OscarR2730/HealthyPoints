@@ -19,7 +19,7 @@ let btnFoto = document.getElementById("btnFoto");
 let btnGuardar = document.getElementById("btnGuardar");
 let habitSelect = document.getElementById("habitSelect");
 
-// 🟢 SISTEMA DE PUNTOS
+// ========= SISTEMA DE PUNTOS =========
 const habitPoints = {
   frutas: 10,
   verduras: 10,
@@ -30,22 +30,34 @@ const habitPoints = {
   caminata: 12
 };
 
-// --- INICIAR CÁMARA ---
+// ========= INICIAR CÁMARA =========
 btnFoto.addEventListener("click", async () => {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: "environment" // fuerza cámara trasera en móviles
+      },
+      audio: false
+    });
+
     video.srcObject = stream;
     video.style.display = "block";
-  } catch (error) {
-    alert("No se pudo acceder a la cámara.");
+
+    // Mostrar canvas también (para que drawImage funcione siempre)
+    canvas.style.display = "block";
+
+  } catch (err) {
+    alert("No se pudo acceder a la cámara. Revisa permisos.");
+    console.error(err);
   }
 });
 
-// --- GUARDAR HÁBITO ---
+// ========= GUARDAR HÁBITO + FOTO =========
 btnGuardar.addEventListener("click", async () => {
+
   const habit = habitSelect.value;
   if (!habit) {
-    alert("Selecciona un hábito.");
+    alert("Selecciona un hábito antes de guardar.");
     return;
   }
 
@@ -55,19 +67,26 @@ btnGuardar.addEventListener("click", async () => {
     return;
   }
 
-  // Tomar foto del video
-  const context = canvas.getContext("2d");
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  // --- Verificar si la cámara está encendida ---
+  if (!video.srcObject) {
+    alert("Primero debes tomar una foto.");
+    return;
+  }
+
+  // --- Capturar imagen del video ---
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
   const dataUrl = canvas.toDataURL("image/png");
 
-  // Guardar en Firebase Storage
+  // --- Subir a Firebase Storage ---
   const filePath = `evidencias/${user.uid}/${Date.now()}.png`;
   const storageRef = ref(storage, filePath);
 
   await uploadString(storageRef, dataUrl, "data_url");
   const imageUrl = await getDownloadURL(storageRef);
 
-  // Actualizar puntos en Firestore
+  // --- Guardar puntos en Firestore ---
   const puntosGanados = habitPoints[habit] || 0;
 
   const userRef = doc(db, "users", user.uid);
@@ -75,12 +94,13 @@ btnGuardar.addEventListener("click", async () => {
     points: increment(puntosGanados)
   });
 
-  alert(`Hábito guardado 🎉\n+${puntosGanados} puntos obtenidos`);
+  alert(`Hábito guardado 🎉\n+${puntosGanados} puntos`);
 
-  // Detener cámara
+  // --- Apagar la cámara ---
   if (video.srcObject) {
-    video.srcObject.getTracks().forEach(t => t.stop());
+    video.srcObject.getTracks().forEach(track => track.stop());
   }
 
+  // Regresar al menú
   window.location.href = "dashboard.html";
 });
