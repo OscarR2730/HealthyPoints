@@ -34,10 +34,18 @@
     </div>
 
     <!-- Vista de cámara -->
-    <video id="video" width="280" autoplay playsinline style="display:none; margin-top:15px;"></video>
+    <div class="media-center">
+      <div class="media-box">
+        <video id="video" width="280" autoplay playsinline style="display:none;"></video>
+      </div>
+    </div>
 
-    <!-- Captura final -->
-    <canvas id="canvas" width="280" height="200" style="display:none; margin-top: 15px;"></canvas>
+    <!-- Foto capturada -->
+    <div class="media-center">
+      <div class="media-box">
+        <canvas id="canvas" width="280" height="200" style="display:none;"></canvas>
+      </div>
+    </div>
 
     <!-- Badge -->
     <span id="fotoBadge" 
