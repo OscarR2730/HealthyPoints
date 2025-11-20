@@ -14,9 +14,11 @@ const btnGuardar = document.getElementById("btnGuardar");
 const habitSelect = document.getElementById("habitSelect");
 const previewBadge = document.getElementById("fotoBadge");
 
-let stream;
+let stream = null;
 
-// 🔵 1. ABRIR CÁMARA
+// ================================
+// 1. ABRIR CÁMARA
+// ================================
 btnFoto.addEventListener("click", async () => {
   try {
     stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -26,17 +28,19 @@ btnFoto.addEventListener("click", async () => {
     canvas.style.display = "none";
     previewBadge.style.display = "none";
 
-    btnFoto.style.display = "none";             // Ocultar tomar foto
-    btnCapturar.style.display = "inline-block"; // Mostrar capturar
+    btnFoto.style.display = "none";             
+    btnCapturar.style.display = "inline-block"; 
     btnGuardar.style.display = "none";
 
-  } catch (e) {
+  } catch (error) {
     alert("No se pudo acceder a la cámara.");
-    console.error(e);
+    console.error(error);
   }
 });
 
-// 🔵 2. CAPTURAR FOTO
+// ================================
+// 2. CAPTURAR FOTO
+// ================================
 btnCapturar.addEventListener("click", () => {
   const context = canvas.getContext("2d");
 
@@ -45,17 +49,21 @@ btnCapturar.addEventListener("click", () => {
 
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  if (stream) stream.getTracks().forEach(t => t.stop());
+  if (stream) {
+    stream.getTracks().forEach((t) => t.stop());
+  }
 
   previewBadge.innerText = "📸 Foto capturada";
   previewBadge.style.display = "inline-block";
 
-  btnFoto.style.display = "inline-block";     // Para repetir foto
-  btnCapturar.style.display = "none";         // Ocultar capturar
-  btnGuardar.style.display = "inline-block";  // Mostrar guardar
+  btnFoto.style.display = "inline-block";
+  btnCapturar.style.display = "none";
+  btnGuardar.style.display = "inline-block";
 });
 
-// 📌 PUNTOS POR HÁBITO
+// ================================
+// PUNTOS POR HÁBITO
+// ================================
 const habitPoints = {
   frutas: 10,
   verduras: 10,
@@ -66,10 +74,12 @@ const habitPoints = {
   caminata: 12
 };
 
-// 🔑 API KEY IMGBB
+// TU API KEY DE IMGBB
 const IMGBB_API_KEY = "0a6a8d103c3be2b8620beba685c8acd7";
 
-// 🔵 3. GUARDAR HÁBITO
+// ================================
+// 3. GUARDAR HÁBITO
+// ================================
 btnGuardar.addEventListener("click", async () => {
   const habit = habitSelect.value;
   if (!habit) return alert("Selecciona un hábito.");
@@ -86,10 +96,10 @@ btnGuardar.addEventListener("click", async () => {
 
     const res = await fetch("https://api.imgbb.com/1/upload", {
       method: "POST",
-      body: formData
+      body: formData,
     });
-    const result = await res.json();
 
+    const result = await res.json();
     if (!result.success) throw new Error("Error subiendo imagen");
 
     const puntosGanados = habitPoints[habit] || 0;
@@ -100,8 +110,15 @@ btnGuardar.addEventListener("click", async () => {
       evidencias: arrayUnion({
         habit,
         image: result.data.url,
-        date: new Date().toISOString()
-      })
+        date: new Date().toISOString(),
+      }),
     });
 
-    alert(`✔ Hábito
+    alert(`✔ Hábito guardado\n📸 Foto subida con éxito\n+${puntosGanados} puntos`);
+    window.location.href = "dashboard.html";
+
+  } catch (err) {
+    alert("Error guardando hábito.");
+    console.error(err);
+  }
+});
