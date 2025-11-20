@@ -170,6 +170,13 @@ a:hover {
   font-weight: 600;
 }
 
+/* hover */
 .btn-green:hover {
   background-color: #256f39 !important;
+}
+
+/* 🔥 NUEVO: ambos botones del registro tendrán el MISMO ancho exacto */
+.btn-row .btn-green {
+  flex: 1;            /* ambos crecen igual */
+  text-align: center; /* mantiene centrado el texto */
 }
