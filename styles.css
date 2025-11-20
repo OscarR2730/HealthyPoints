@@ -102,6 +102,14 @@ body {
   transform: translateY(-1px);
 }
 
+/* Botones alineados en habitos.html */
+.btn-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
 /* ===== GRUPO DE BOTONES ===== */
 .btn-group {
   display: flex;
@@ -139,15 +147,15 @@ a:hover {
   margin-top: 10px;
 }
 
-/* ===== BOTÓN ROJO (Opción A: Rojo moderno con sombra) ===== */
+/* ===== BOTÓN ROJO (Cerrar sesión / volver) ===== */
 .btn-logout {
-  background-color: #c0392b; /* rojo moderno */
-  color: white;
-  box-shadow: 0 3px 12px rgba(192, 57, 43, 0.35); /* sombra */
+  background-color: #c0392b !important;
+  color: white !important;
+  box-shadow: 0 3px 12px rgba(192, 57, 43, 0.35);
   transition: background-color 0.2s, transform 0.15s;
 }
 
 .btn-logout:hover {
-  background-color: #a93226;
+  background-color: #a93226 !important;
   transform: translateY(-2px);
 }
