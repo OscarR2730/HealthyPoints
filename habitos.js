@@ -20,31 +20,44 @@ const canvasContainer = document.getElementById("canvasContainer");
 let stream = null;
 
 // ================================
-// 1. ABRIR CÁMARA
+// 1. ABRIR CÁMARA (con prioridad a cámara trasera)
 // ================================
 btnFoto.addEventListener("click", async () => {
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    video.srcObject = stream;
+    // Intentar cámara trasera
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: "environment" } }
+    });
 
-    // Mostrar cámara
-    videoContainer.style.display = "flex";
-    video.style.display = "block";
-
-    // Ocultar canvas si hubiera uno previo
-    canvasContainer.style.display = "none";
-    canvas.style.display = "none";
-    previewBadge.style.display = "none";
-
-    // Botones
-    btnFoto.style.display = "none";
-    btnCapturar.style.display = "inline-block";
-    btnGuardar.style.display = "none";
-
-  } catch (error) {
-    alert("No se pudo acceder a la cámara.");
-    console.error(error);
+  } catch (e1) {
+    try {
+      // Si falla, intentar cámara frontal
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user" }
+      });
+    } catch (e2) {
+      // Último fallback: cualquier cámara disponible
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: true
+      });
+    }
   }
+
+  video.srcObject = stream;
+
+  // Mostrar cámara
+  videoContainer.style.display = "flex";
+  video.style.display = "block";
+
+  // Ocultar canvas si hubiera uno previo
+  canvasContainer.style.display = "none";
+  canvas.style.display = "none";
+  previewBadge.style.display = "none";
+
+  // Botones
+  btnFoto.style.display = "none";
+  btnCapturar.style.display = "inline-block";
+  btnGuardar.style.display = "none";
 });
 
 // ================================
@@ -136,4 +149,3 @@ btnGuardar.addEventListener("click", async () => {
     console.error(err);
   }
 });
-
