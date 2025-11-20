@@ -14,6 +14,9 @@ const btnGuardar = document.getElementById("btnGuardar");
 const habitSelect = document.getElementById("habitSelect");
 const previewBadge = document.getElementById("fotoBadge");
 
+const videoContainer = document.getElementById("videoContainer");
+const canvasContainer = document.getElementById("canvasContainer");
+
 let stream = null;
 
 // ================================
@@ -24,12 +27,18 @@ btnFoto.addEventListener("click", async () => {
     stream = await navigator.mediaDevices.getUserMedia({ video: true });
     video.srcObject = stream;
 
+    // Mostrar cámara
+    videoContainer.style.display = "flex";
     video.style.display = "block";
+
+    // Ocultar canvas si hubiera uno previo
+    canvasContainer.style.display = "none";
     canvas.style.display = "none";
     previewBadge.style.display = "none";
 
-    btnFoto.style.display = "none";             
-    btnCapturar.style.display = "inline-block"; 
+    // Botones
+    btnFoto.style.display = "none";
+    btnCapturar.style.display = "inline-block";
     btnGuardar.style.display = "none";
 
   } catch (error) {
@@ -44,8 +53,13 @@ btnFoto.addEventListener("click", async () => {
 btnCapturar.addEventListener("click", () => {
   const context = canvas.getContext("2d");
 
+  // Mostrar canvas con la foto
+  canvasContainer.style.display = "flex";
   canvas.style.display = "block";
+
+  // Ocultar cámara
   video.style.display = "none";
+  videoContainer.style.display = "none";
 
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
@@ -53,10 +67,12 @@ btnCapturar.addEventListener("click", () => {
     stream.getTracks().forEach((t) => t.stop());
   }
 
+  // Badge de confirmación
   previewBadge.innerText = "📸 Foto capturada";
   previewBadge.style.display = "inline-block";
 
-  btnFoto.style.display = "inline-block";
+  // Botones
+  btnFoto.style.display = "inline-block";   // Permite repetir foto
   btnCapturar.style.display = "none";
   btnGuardar.style.display = "inline-block";
 });
@@ -74,9 +90,6 @@ const habitPoints = {
   caminata: 12
 };
 
-// TU API KEY DE IMGBB
-const IMGBB_API_KEY = "0a6a8d103c3be2b8620beba685c8acd7";
-
 // ================================
 // 3. GUARDAR HÁBITO
 // ================================
@@ -91,7 +104,7 @@ btnGuardar.addEventListener("click", async () => {
     const dataUrl = canvas.toDataURL("image/png").replace("data:image/png;base64,", "");
 
     const formData = new FormData();
-    formData.append("key", IMGBB_API_KEY);
+    formData.append("key", "0a6a8d103c3be2b8620beba685c8acd7");
     formData.append("image", dataUrl);
 
     const res = await fetch("https://api.imgbb.com/1/upload", {
@@ -114,7 +127,8 @@ btnGuardar.addEventListener("click", async () => {
       }),
     });
 
-    alert(`✔ Hábito guardado\n📸 Foto subida con éxito\n+${puntosGanados} puntos`);
+    alert(`✔ Hábito guardado\n📸 Foto subida\n+${puntosGanados} puntos`);
+
     window.location.href = "dashboard.html";
 
   } catch (err) {
@@ -122,3 +136,4 @@ btnGuardar.addEventListener("click", async () => {
     console.error(err);
   }
 });
+
