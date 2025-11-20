@@ -26,34 +26,7 @@ body {
   text-align: center;
 }
 
-/* ===== LOGO ===== */
-.logo {
-  width: 100px;
-  margin-bottom: 20px;
-}
-
 /* ===== TÍTULOS ===== */
-.title {
-  font-size: 38px;
-  font-weight: 700;
-  color: #0b5e2b;
-  margin-bottom: 8px;
-}
-
-.subtitle {
-  font-size: 16px;
-  color: #557a66;
-  margin-bottom: 32px;
-}
-
-.subtitle-large {
-  font-size: 24px;
-  font-weight: 600;
-  color: #0b5e2b;
-  margin-bottom: 32px;
-}
-
-/* ===== Para el título del dashboard ===== */
 .menu-title {
   font-size: 26px;
   font-weight: 700;
@@ -61,9 +34,10 @@ body {
   margin-bottom: 10px;
 }
 
-/* ===== GRUPO DE INPUTS ===== */
-.input-group {
-  margin-bottom: 24px;
+.subtitle {
+  font-size: 16px;
+  color: #557a66;
+  margin-bottom: 32px;
 }
 
 /* ===== INPUTS ===== */
@@ -92,75 +66,10 @@ body {
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
   display: inline-block;
-  text-align: center;
+  transition: 0.2s;
 }
 
-.btn:hover {
-  background-color: #256f39;
-  transform: translateY(-1px);
-}
-
-/* Botones alineados en habitos.html */
-.btn-row {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin: 20px 0;
-}
-
-/* ===== GRUPO DE BOTONES ===== */
-.btn-group {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-/* ===== LINKS ===== */
-a {
-  color: #2f8e48;
-  text-decoration: none;
-  font-size: 15px;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-/* ===== TARJETAS ===== */
-.card {
-  background: white;
-  padding: 25px;
-  border-radius: 20px;
-  width: 100%;
-  margin-top: 20px;
-  box-shadow: 0px 0px 10px rgba(0,0,0,0.08);
-  text-align: center;
-}
-
-/* ===== MENÚ VERTICAL EN DASHBOARD ===== */
-.menu {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 10px;
-}
-
-/* ===== BOTÓN ROJO (Cerrar sesión / volver) ===== */
-.btn-logout {
-  background-color: #c0392b !important;
-  color: white !important;
-  box-shadow: 0 3px 12px rgba(192, 57, 43, 0.35);
-  transition: background-color 0.2s, transform 0.15s;
-}
-
-.btn-logout:hover {
-  background-color: #a93226 !important;
-  transform: translateY(-2px);
-}
-
-/* Botones alineados y del mismo tamaño */
 .btn-row {
   display: flex;
   justify-content: center;
@@ -170,15 +79,26 @@ a:hover {
 
 .btn-green {
   background-color: #2f8e48 !important;
-  color: white !important;
-  border-radius: 10px;
-  padding: 14px 0;
-  font-size: 17px;
-  font-weight: 600;
-  width: 160px;        /* MISMA ANCHURA PARA AMBOS BOTONES */
-  text-align: center;
+  width: 150px;
 }
 
-.btn-green:hover {
-  background-color: #256f39 !important;
+.btn-logout {
+  background-color: #c0392b !important;
+  color: white !important;
+}
+
+/* ===== CÁMARA CENTRADA ===== */
+.media-center {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+/* ===== BORDE SUAVE PARA VIDEO Y CANVAS ===== */
+.media-box {
+  border: 2px solid #2e7d32;        /* verde suave */
+  border-radius: 12px;
+  padding: 6px;
+  background: white;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.12);
 }
