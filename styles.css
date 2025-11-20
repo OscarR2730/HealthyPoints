@@ -160,23 +160,25 @@ a:hover {
   transform: translateY(-2px);
 }
 
-/* Botones verdes iguales */
+/* Botones alineados y del mismo tamaño */
+.btn-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
 .btn-green {
   background-color: #2f8e48 !important;
   color: white !important;
   border-radius: 10px;
-  padding: 14px 24px;
+  padding: 14px 0;
   font-size: 17px;
   font-weight: 600;
+  width: 160px;        /* MISMA ANCHURA PARA AMBOS BOTONES */
+  text-align: center;
 }
 
-/* hover */
 .btn-green:hover {
   background-color: #256f39 !important;
-}
-
-/* 🔥 NUEVO: ambos botones del registro tendrán el MISMO ancho exacto */
-.btn-row .btn-green {
-  flex: 1;            /* ambos crecen igual */
-  text-align: center; /* mantiene centrado el texto */
 }
