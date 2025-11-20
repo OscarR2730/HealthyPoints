@@ -5,57 +5,41 @@
   <title>Registrar hábito</title>
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
   <div class="center">
     <h2 class="menu-title">Registrar hábito</h2>
     <p class="subtitle">Selecciona un hábito que realizaste hoy:</p>
 
-<!-- Select con emojis -->
-<select id="habitSelect" class="input">
-  <option value="">-- Selecciona un hábito --</option>
-  <option value="frutas">🍎 Comí frutas</option>
-  <option value="verduras">🥗 Comí verduras</option>
-  <option value="agua">💧 Tomé un vaso de agua</option>
-  <option value="correr">🏃‍♂️ Salí a correr</option>
-  <option value="gimnasio">🏋️ Fui al gimnasio</option>
-  <option value="meditacion">🧘 Medité</option>
-  <option value="caminata">🚶 Hice una caminata</option>
-</select>
+    <!-- Select con emojis -->
+    <select id="habitSelect" class="input">
+      <option value="">-- Selecciona un hábito --</option>
+      <option value="frutas">🍎 Comí frutas</option>
+      <option value="verduras">🥗 Comí verduras</option>
+      <option value="agua">💧 Tomé un vaso de agua</option>
+      <option value="correr">🏃‍♂️ Salí a correr</option>
+      <option value="gimnasio">🏋️ Fui al gimnasio</option>
+      <option value="meditacion">🧘 Medité</option>
+      <option value="caminata">🚶 Hice una caminata</option>
+    </select>
 
-    <!-- Botón para tomar foto -->
-    <button id="btnStartCamera" class="btn" style="margin-top:20px;">
-      Tomar foto
-    </button>
+    <br><br>
 
-    <!-- Input oculto para móviles -->
-    <input 
-      type="file"
-      id="mobileCamera"
-      accept="image/*"
-      capture="environment"
-      style="display:none"
-    />
-
-    <!-- Contenedor de cámara (solo PC) -->
-    <div id="cameraContainer" style="display:none; margin-top:20px;">
-      <video id="video" autoplay playsinline style="width:100%; border-radius:10px;"></video>
-      <button id="btnCapture" class="btn" style="margin-top:10px;">Capturar foto</button>
+    <!-- Botones lado a lado -->
+    <div style="display:flex; gap:12px; justify-content:center;">
+      <button id="btnTomarFoto" class="btn btn-green">Tomar foto</button>
+      <button id="btnGuardar" class="btn btn-green">Guardar hábito</button>
     </div>
 
-    <!-- Foto tomada -->
-    <img id="capturedImage" style="display:none; width:100%; margin-top:20px; border-radius:10px;">
+    <br>
 
-    <!-- Botón guardar -->
-    <button id="btnSaveHabit" class="btn" style="margin-top:20px; background:#2ecc71;">
-      Guardar hábito
-    </button>
+    <!-- Vista de cámara -->
+    <video id="video" width="280" autoplay playsinline style="display:none; margin-top:15px;"></video>
 
-    <a href="dashboard.html">
-      <button class="btn btn-logout" style="margin-top:25px;">Volver al menú</button>
-    </a>
-  </div>
+    <!-- Captura -->
+    <canvas id="canvas" width="280" height="200" style="display:none;"></canvas>
 
-  <script type="module" src="habitos.js"></script>
-</body>
-</html>
+    <br><br>
+
+    <a href="dashboard.html" class="btn btn-logout">Volver al menú<
