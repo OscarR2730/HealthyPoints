@@ -3,16 +3,18 @@ import { auth, db } from "./firebase.js";
 import {
   doc,
   updateDoc,
-  getDoc,
   increment,
   arrayUnion
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+import { signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
 let video = document.getElementById("video");
 let canvas = document.getElementById("canvas");
 let btnFoto = document.getElementById("btnFoto");
 let btnGuardar = document.getElementById("btnGuardar");
 let habitSelect = document.getElementById("habitSelect");
+let previewBadge = document.getElementById("fotoBadge");
 
 // 🟢 SISTEMA DE PUNTOS
 const habitPoints = {
@@ -32,44 +34,50 @@ const IMGBB_API_KEY = "0a6a8d103c3be2b8620beba685c8acd7";
 btnFoto.addEventListener("click", async () => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: { exact: "environment" }
-      }
+      video: { facingMode: { exact: "environment" } }
     });
 
     video.srcObject = stream;
     video.style.display = "block";
     canvas.style.display = "none";
+    previewBadge.style.display = "none";
+
   } catch (error) {
-    // si "environment" falla, usar cualquier cámara
-    const fallback = await navigator.mediaDevices.getUserMedia({
-      video: true
-    });
+    const fallback = await navigator.mediaDevices.getUserMedia({ video: true });
     video.srcObject = fallback;
-    video.style.display = "block";
+  }
+});
+
+// --- CAPTURAR FOTO ---
+btnFoto.addEventListener("click", () => {
+  const context = canvas.getContext("2d");
+
+  // Capturar imagen
+  canvas.style.display = "block";
+  video.style.display = "none";
+
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  // Mostrar badge visual
+  previewBadge.innerText = "📸 Foto capturada";
+  previewBadge.style.display = "inline-block";
+
+  // Detener cámara para congelar imagen
+  if (video.srcObject) {
+    video.srcObject.getTracks().forEach(t => t.stop());
   }
 });
 
 // --- GUARDAR HÁBITO ---
 btnGuardar.addEventListener("click", async () => {
   const habit = habitSelect.value;
-  if (!habit) {
-    alert("Selecciona un hábito.");
-    return;
-  }
+  if (!habit) return alert("Selecciona un hábito.");
 
   const user = auth.currentUser;
-  if (!user) {
-    alert("Debes iniciar sesión.");
-    return;
-  }
+  if (!user) return alert("Debes iniciar sesión.");
 
   try {
-    // Capturar imagen del video
-    const context = canvas.getContext("2d");
-    canvas.style.display = "block";
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
+    // Convertir canvas a base64
     const dataUrl = canvas.toDataURL("image/png").replace("data:image/png;base64,", "");
 
     // Subir a imgbb
@@ -83,12 +91,11 @@ btnGuardar.addEventListener("click", async () => {
     });
 
     const result = await response.json();
-
     if (!result.success) throw new Error("Error subiendo imagen");
 
     const imageUrl = result.data.url;
 
-    // Actualizar Firestore
+    // Puntos
     const puntosGanados = habitPoints[habit] || 0;
     const userRef = doc(db, "users", user.uid);
 
@@ -101,17 +108,21 @@ btnGuardar.addEventListener("click", async () => {
       })
     });
 
-    alert(`Hábito guardado 🎉\n+${puntosGanados} puntos\nImagen subida correctamente`);
-
-    // Detener cámara
-    if (video.srcObject) {
-      video.srcObject.getTracks().forEach(t => t.stop());
-    }
+    alert(`✔ Hábito guardado\n📸 Foto subida con éxito\n+${puntosGanados} puntos`);
 
     window.location.href = "dashboard.html";
 
   } catch (err) {
+    alert("Error guardando hábito o subiendo la imagen.");
     console.error(err);
-    alert("Error guardando hábito o subiendo imagen.");
   }
 });
+
+// --- CERRAR SESIÓN ---
+let logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+    window.location.href = "index.html";
+  });
+}
